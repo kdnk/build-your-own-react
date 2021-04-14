@@ -2,12 +2,13 @@ const Didact = {
   createElement,
 };
 
-/** @jsxImportSource Didact.createElement */
-const element = Didact.createElement(
-  "div",
-  { id: "foo" },
-  Didact.createElement("a", null, "bar"),
-  Didact.createElement("b")
+/** @jsxRuntime classic */
+/** @jsx Didact.createElement */
+const element = (
+  <div id="foo">
+    <a>bar</a>
+    <b></b>
+  </div>
 );
 
 console.log(element);
