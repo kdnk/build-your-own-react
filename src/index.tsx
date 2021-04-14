@@ -1,3 +1,17 @@
+let nextUnitOfWork = null;
+
+function workLoop(deadline) {
+  let sholdYield = false;
+  while (nextUnitOfWork && !sholdYield) {
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    sholdYield = deadline.timeRemaining() < 1;
+  }
+  (window as any).requestIdleCallback(workLoop);
+}
+(window as any).requestIdleCallback(workLoop);
+
+function performUnitOfWork(nextUnitOfWork) {}
+
 const Didact = {
   createElement,
   render,
