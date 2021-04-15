@@ -15,7 +15,9 @@ function workLoop(deadline: { timeRemaining: () => number }) {
 (window as any).requestIdleCallback(workLoop);
 
 function performUnitOfWork(nextUnitOfWork) {
-  // TODO
+  // 1. add the element to the DOM
+  // 2. create the fibers for the element's children
+  // 3. select the next unit of work
 }
 
 const Didact = {
