@@ -42,16 +42,19 @@ export function render(
   element: JSX.Element | DidactElement,
   container: HTMLElement
 ) {
-  nextUnitOfWork = {
+  wipRoot = {
     type: "",
     dom: container,
     props: {
       children: [element],
     },
   };
+
+  nextUnitOfWork = wipRoot;
 }
 
 let nextUnitOfWork: NextUnitOfWork = null;
+let wipRoot: Fiber | null = null;
 
 function workLoop(deadline: { timeRemaining: () => number }) {
   let sholdYield = false;
