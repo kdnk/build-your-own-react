@@ -101,7 +101,6 @@ function performUnitOfWork(fiber: Fiber): NextUnitOfWork {
   }
 
   // 3. select the next unit of work
-
   if (fiber.child) {
     return fiber.child;
   }
