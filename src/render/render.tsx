@@ -1,5 +1,26 @@
 import { DidactElement, Fiber, NextUnitOfWork } from "../type";
 
+// https://developers.google.com/web/updates/2015/08/using-requestidlecallback
+(window as any).requestIdleCallback =
+  (window as any).requestIdleCallback ||
+  function (cb: any) {
+    var start = Date.now();
+    return setTimeout(function () {
+      cb({
+        didTimeout: false,
+        timeRemaining: function () {
+          return Math.max(0, 50 - (Date.now() - start));
+        },
+      });
+    }, 1);
+  };
+
+(window as any).cancelIdleCallback =
+  (window as any).cancelIdleCallback ||
+  function (id: any) {
+    clearTimeout(id);
+  };
+
 function createDom(fiber: any) {
   const dom =
     fiber.type === "TEXT_ELEMENT"
