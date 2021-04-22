@@ -1,24 +1,18 @@
 import { DidactElement } from "../type";
 
-export function render(
-  element: JSX.Element | DidactElement,
-  container: HTMLElement
-) {
+export function createDom(fiber: any) {
   const dom =
-    element.type === "TEXT_ELEMENT"
+    fiber.type === "TEXT_ELEMENT"
       ? document.createTextNode("")
-      : document.createElement(element.type);
+      : document.createElement(fiber.type);
   const isProperty = (key: string) => {
     return key !== "children";
   };
 
-  Object.keys(element.props)
+  Object.keys(fiber.props)
     .filter(isProperty)
     .forEach((propsName) => {
-      dom[propsName] = element.props[propsName];
+      dom[propsName] = fiber.props[propsName];
     });
-  element.props.children.forEach((childElement: DidactElement) => {
-    render(childElement, dom);
-  });
-  container.appendChild(dom);
+  return dom;
 }
