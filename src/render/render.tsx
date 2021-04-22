@@ -40,6 +40,25 @@ function createDom(fiber: any) {
 
 function commitRoot() {
   // TODO add nodes to dom
+  if (!wipRoot) {
+    return;
+  }
+  if (!wipRoot.child) {
+    return;
+  }
+
+  commitWork(wipRoot.child);
+  wipRoot = null;
+}
+
+function commitWork(fiber: Fiber) {
+  if (!fiber) {
+    return;
+  }
+  const domParent = fiber.parent!.dom;
+  domParent?.appendChild(fiber.dom!);
+  commitWork(fiber.child!);
+  commitWork(fiber.sibling!);
 }
 
 export function render(
