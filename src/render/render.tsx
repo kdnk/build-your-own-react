@@ -1,6 +1,6 @@
-import { DidactElement } from "../type";
+import { DidactElement, Fiber, NextUnitOfWork } from "../type";
 
-export function createDom(fiber: any) {
+function createDom(fiber: any) {
   const dom =
     fiber.type === "TEXT_ELEMENT"
       ? document.createTextNode("")
@@ -15,4 +15,81 @@ export function createDom(fiber: any) {
       dom[propsName] = fiber.props[propsName];
     });
   return dom;
+}
+
+export function render(
+  element: JSX.Element | DidactElement,
+  container: HTMLElement
+) {
+  nextUnitOfWork = {
+    type: "",
+    dom: container,
+    props: {
+      children: [element],
+    },
+  };
+}
+
+let nextUnitOfWork: NextUnitOfWork = null;
+
+function workLoop(deadline: { timeRemaining: () => number }) {
+  let sholdYield = false;
+  while (nextUnitOfWork && !sholdYield) {
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    sholdYield = deadline.timeRemaining() < 1;
+  }
+  (window as any).requestIdleCallback(workLoop);
+}
+
+(window as any).requestIdleCallback(workLoop);
+
+function performUnitOfWork(fiber: Fiber): NextUnitOfWork {
+  // 1. add the element to the DOM
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+
+  if (fiber.parent) {
+    fiber.parent.dom!.appendChild(fiber.dom!);
+  }
+  // 2. create the fibers for the element's children
+  const elements = fiber.props.children;
+  let index = 0;
+  let prevSibling: Fiber | null = null;
+
+  while (index < elements.length) {
+    const element = elements[index];
+
+    const newFiber: Fiber = {
+      type: element.type,
+      props: element.props,
+      parent: fiber,
+      dom: null,
+    };
+
+    if (index === 0) {
+      fiber.child = newFiber;
+    } else {
+      if (prevSibling) {
+        prevSibling.sibling = newFiber;
+      }
+    }
+
+    prevSibling = newFiber;
+    index++;
+  }
+
+  // 3. select the next unit of work
+
+  if (fiber.child) {
+    return fiber.child;
+  }
+  let nextFiber: Fiber | undefined = fiber;
+  while (nextFiber) {
+    if (nextFiber && nextFiber.sibling) {
+      return nextFiber.sibling;
+    }
+    nextFiber = nextFiber.parent;
+  }
+  return null;
 }
