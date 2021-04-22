@@ -38,6 +38,10 @@ function createDom(fiber: any) {
   return dom;
 }
 
+function commitRoot() {
+  // TODO add nodes to dom
+}
+
 export function render(
   element: JSX.Element | DidactElement,
   container: HTMLElement
@@ -62,6 +66,10 @@ function workLoop(deadline: { timeRemaining: () => number }) {
     nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
     sholdYield = deadline.timeRemaining() < 1;
   }
+
+  if (!nextUnitOfWork && wipRoot) {
+    commitRoot();
+  }
   (window as any).requestIdleCallback(workLoop);
 }
 
@@ -73,9 +81,6 @@ function performUnitOfWork(fiber: Fiber): NextUnitOfWork {
     fiber.dom = createDom(fiber);
   }
 
-  if (fiber.parent) {
-    fiber.parent.dom!.appendChild(fiber.dom!);
-  }
   // 2. create the fibers for the element's children
   const elements = fiber.props.children;
   let index = 0;
