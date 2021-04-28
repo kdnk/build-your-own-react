@@ -1,9 +1,9 @@
-import { Child, DidactElement } from "../type";
+import { DidactElement } from "../type";
 
 export function createElement(
   type: string,
   props?: object | null,
-  ...children: Child[]
+  ...children: DidactElement[]
 ): DidactElement {
   function createTextElement(text: string) {
     return {

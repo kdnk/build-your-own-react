@@ -1,4 +1,3 @@
-export type Child = { type: string; props: object } | string;
 export type Fiber = {
   dom: HTMLElement | null;
   type: string;
